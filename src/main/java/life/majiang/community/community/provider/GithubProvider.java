@@ -45,6 +45,7 @@ public class GithubProvider {
             //把Sting的json对象自动转化为java的类对象(本例中是转化为GithubUser对象)
             return JSON.parseObject(string, GithubUser.class);
         } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
