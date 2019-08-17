@@ -27,8 +27,7 @@ public class GithubProvider {
                 .build();
         try (Response response = client.newCall(request).execute()) {
             String string = response.body().string();
-            String token = string.split("&")[0].split("=")[1];
-            return token;
+            return string.split("&")[0].split("=")[1];
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,8 +43,7 @@ public class GithubProvider {
             Response response = client.newCall(request).execute();
             String string = response.body().string();
             //把Sting的json对象自动转化为java的类对象(本例中是转化为GithubUser对象)
-            GithubUser githubUser = JSON.parseObject(string, GithubUser.class);
-            return githubUser;
+            return JSON.parseObject(string, GithubUser.class);
         } catch (IOException e) {
         }
         return null;
