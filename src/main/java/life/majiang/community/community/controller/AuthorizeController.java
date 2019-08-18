@@ -60,11 +60,11 @@ public class AuthorizeController {
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
             userMapper.insert(user);
-            response.addCookie(new Cookie("token",token));
-            //重定向到index页面，地址栏也会变，如果直接return index则地址栏不会变
-            //request.getSession().setAttribute("user",githubUser);
-            return "redirect:/";
             //登录成功，写cookie和session
+            response.addCookie(new Cookie("token",token));
+            //request.getSession().setAttribute("user",githubUser);
+            //重定向到index页面，地址栏也会变，如果直接return index则地址栏不会变
+            return "redirect:/";
 
         }else{
             //登录失败，重新登录
