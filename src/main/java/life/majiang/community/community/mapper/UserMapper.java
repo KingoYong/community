@@ -15,8 +15,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper
 public interface UserMapper {
-    @Insert("insert into user (name,account_id,token,gmt_create,gmt_modified) values (#{name},#{accountId},#{token},#{gmtCreate},#{gmtModified})")
+    @Insert("insert into user (name,account_id,token,gmt_create,gmt_modified,avatar_url) values (#{name},#{accountId},#{token},#{gmtCreate},#{gmtModified},#{avatarUrl})")
     void insert(User user);
+
     //如果形参是类就自动把参数放进#{}里面，如果不是类就要加入注解,比如上面是user类，就不用加注解
     @Select("select * from user where token = #{token}")
     User findByToken(@Param("token") String token);
