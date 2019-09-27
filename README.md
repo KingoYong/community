@@ -32,7 +32,7 @@ CREATE TABLE question
     gmt_create bigint,
     gmt_modified bigint,
     creator int,
-    comment_cout int DEFAULT 0,
+    comment_count int DEFAULT 0,
     view_count int DEFAULT 0,
     like_count int DEFAULT 0,
     tag varchar(256)

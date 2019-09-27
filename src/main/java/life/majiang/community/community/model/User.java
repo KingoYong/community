@@ -1,6 +1,7 @@
 package life.majiang.community.community.model;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 /**
  * @description:
@@ -8,6 +9,7 @@ import lombok.Data;
  * @create: 2019-07-21 15:13
  **/
 @Data
+@Component
 public class User {
     private Integer id;
     private String name;

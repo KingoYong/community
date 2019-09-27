@@ -1,16 +1,15 @@
-package life.majiang.community.community.model;
+package life.majiang.community.community.dto;
 
+import life.majiang.community.community.model.User;
 import lombok.Data;
-import org.springframework.stereotype.Component;
 
 /**
  * @description:
  * @author: Ye YinYong
- * @create: 2019-09-23 22:26
+ * @create: 2019-09-27 21:24
  **/
 @Data
-@Component
-public class Question {
+public class QuestionDTO {
     private Integer id;
     private String title;
     private String description;
@@ -21,4 +20,5 @@ public class Question {
     private Integer viewCount;
     private Integer commentCount;
     private Integer likeCount;
+    private User user;
 }
