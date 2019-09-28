@@ -5,7 +5,8 @@
 [spring web文档](https://spring.io/guides/gs/serving-web-content/)
 [bootstrap](https://v3.bootcss.com/getting-started/#download)
 [github 认证](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
-
+[thymeleaf](https://www.thymeleaf.org/)
+[thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#a-website-for-a-grocery)
 ##工具
 [OkHttp](https://square.github.io/okhttp/)
 
