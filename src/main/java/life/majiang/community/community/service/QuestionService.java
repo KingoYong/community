@@ -1,5 +1,6 @@
 package life.majiang.community.community.service;
 
+import life.majiang.community.community.dto.PaginationDTO;
 import life.majiang.community.community.dto.QuestionDTO;
 import life.majiang.community.community.mapper.QuestionMapper;
 import life.majiang.community.community.mapper.UserMapper;
@@ -27,9 +28,17 @@ public class QuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
-    public List<QuestionDTO> getList() {
+    public PaginationDTO getList(Integer pageNum, Integer pageSize) {
+        PaginationDTO paginationDTO = new PaginationDTO();
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        List<Question> questionList = questionMapper.getList();
+        Integer totalCount = questionMapper.getCount();
+        paginationDTO.setPagination(totalCount, pageNum, pageSize);
+        //当页码小于1时，设置为1；大于总页数时，设置为总页数
+        pageNum = pageNum < 1 ? 1 : pageNum;
+        pageNum = pageNum > paginationDTO.getTotalPage() ? paginationDTO.getTotalPage() : pageNum;
+        //计算sql中查询的偏移量
+        Integer offset = pageSize * (pageNum - 1);
+        List<Question> questionList = questionMapper.getList(offset, pageSize);
         for (Question question : questionList) {
             User user = userMapper.findById(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
@@ -38,6 +47,8 @@ public class QuestionService {
             questionDTO.setUser(user);
             questionDTOList.add(questionDTO);
         }
-        return questionDTOList;
+        paginationDTO.setQuestions(questionDTOList);
+        return paginationDTO;
+
     }
 }
