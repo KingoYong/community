@@ -28,8 +28,8 @@ public class PaginationDTO {
             totalPage = totalCount / pageSize + 1;
         }
         //当页码小于1时，设置为1；大于总页数时，设置为总页数
-        pageNum = pageNum < 1 ? 1 : pageNum;
         pageNum = pageNum > totalPage ? totalPage : pageNum;
+        pageNum = pageNum < 1 ? 1 : pageNum;
         this.pageNum = pageNum;
         //添加列表元素,分页下面的页码链接，点击可以跳转到某页的列表
         for (int i = pageNum - 3; i < pageNum + 4; i++) {

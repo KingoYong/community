@@ -34,8 +34,8 @@ public class QuestionService {
         Integer totalCount = questionMapper.getCount();
         paginationDTO.setPagination(totalCount, pageNum, pageSize);
         //当页码小于1时，设置为1；大于总页数时，设置为总页数
-        pageNum = pageNum < 1 ? 1 : pageNum;
         pageNum = pageNum > paginationDTO.getTotalPage() ? paginationDTO.getTotalPage() : pageNum;
+        pageNum = pageNum < 1 ? 1 : pageNum;
         //计算sql中查询的偏移量
         Integer offset = pageSize * (pageNum - 1);
         List<Question> questionList = questionMapper.getList(offset, pageSize);
@@ -50,5 +50,28 @@ public class QuestionService {
         paginationDTO.setQuestions(questionDTOList);
         return paginationDTO;
 
+    }
+
+    public PaginationDTO getListByUserId(Integer userId, Integer pageNum, Integer pageSize) {
+        PaginationDTO paginationDTO = new PaginationDTO();
+        List<QuestionDTO> questionDTOList = new ArrayList<>();
+        Integer totalCount = questionMapper.getCountByUserId(userId);
+        paginationDTO.setPagination(totalCount, pageNum, pageSize);
+        //当页码小于1时，设置为1；大于总页数时，设置为总页数
+        pageNum = pageNum > paginationDTO.getTotalPage() ? paginationDTO.getTotalPage() : pageNum;
+        pageNum = pageNum < 1 ? 1 : pageNum;
+        //计算sql中查询的偏移量
+        Integer offset = pageSize * (pageNum - 1);
+        List<Question> questionList = questionMapper.getListByUserId(userId, offset, pageSize);
+        for (Question question : questionList) {
+            User user = userMapper.findById(question.getCreator());
+            QuestionDTO questionDTO = new QuestionDTO();
+            //将一个对象的属性直接copy到另一个对象的属性中，这里将question的属性直接放到questionDTO中
+            BeanUtils.copyProperties(question, questionDTO);
+            questionDTO.setUser(user);
+            questionDTOList.add(questionDTO);
+        }
+        paginationDTO.setQuestions(questionDTOList);
+        return paginationDTO;
     }
 }
