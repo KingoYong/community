@@ -7,6 +7,7 @@
 [github 认证](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
 [thymeleaf](https://www.thymeleaf.org/)
 [thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#a-website-for-a-grocery)
+[拦截器](https://docs.spring.io/spring/docs/5.0.3.RELEASE/spring-framework-reference/web.html#mvc-handlermapping-interceptor)
 ##工具
 [OkHttp](https://square.github.io/okhttp/)
 
