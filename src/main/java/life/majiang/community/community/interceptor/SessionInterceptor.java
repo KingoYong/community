@@ -31,12 +31,11 @@ public class SessionInterceptor implements HandlerInterceptor {
                     User user = userMapper.findByToken(token);
                     if (user != null) {
                         request.getSession().setAttribute("user", user);
-                        return true;
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     @Override
