@@ -40,3 +40,6 @@ CREATE TABLE question
     tag varchar(256)
 );
 ```
+```bash
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate
+```

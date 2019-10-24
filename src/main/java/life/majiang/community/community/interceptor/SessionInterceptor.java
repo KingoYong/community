@@ -2,14 +2,16 @@ package life.majiang.community.community.interceptor;
 
 import life.majiang.community.community.mapper.UserMapper;
 import life.majiang.community.community.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import life.majiang.community.community.model.UserExample;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @description:
@@ -18,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  **/
 @Service
 public class SessionInterceptor implements HandlerInterceptor {
-    @Autowired
+    @Resource
     UserMapper userMapper;
 
     @Override
@@ -28,9 +30,12 @@ public class SessionInterceptor implements HandlerInterceptor {
             for (Cookie cookie : cookies) {
                 if ("token".equals(cookie.getName())) {
                     String token = cookie.getValue();
-                    User user = userMapper.findByToken(token);
-                    if (user != null) {
-                        request.getSession().setAttribute("user", user);
+                    UserExample example = new UserExample();
+                    example.createCriteria().andTokenEqualTo(token);
+                    List<User> users = userMapper.selectByExample(example);
+//                    UserOld user = userMapper.findByToken(token);
+                    if (users.size() != 0) {
+                        request.getSession().setAttribute("user", users.get(0));
                     }
                 }
             }

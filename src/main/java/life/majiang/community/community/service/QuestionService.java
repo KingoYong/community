@@ -5,12 +5,14 @@ import life.majiang.community.community.dto.QuestionDTO;
 import life.majiang.community.community.mapper.QuestionMapper;
 import life.majiang.community.community.mapper.UserMapper;
 import life.majiang.community.community.model.Question;
+import life.majiang.community.community.model.QuestionExample;
 import life.majiang.community.community.model.User;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,25 +24,25 @@ import java.util.List;
 @Service
 @Component
 public class QuestionService {
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private QuestionMapper questionMapper;
 
     public PaginationDTO getList(Integer pageNum, Integer pageSize) {
         PaginationDTO paginationDTO = new PaginationDTO();
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        Integer totalCount = questionMapper.getCount();
+        Integer totalCount = (int)questionMapper.countByExample(new QuestionExample());
         paginationDTO.setPagination(totalCount, pageNum, pageSize);
         //当页码小于1时，设置为1；大于总页数时，设置为总页数
         pageNum = pageNum > paginationDTO.getTotalPage() ? paginationDTO.getTotalPage() : pageNum;
         pageNum = pageNum < 1 ? 1 : pageNum;
         //计算sql中查询的偏移量
         Integer offset = pageSize * (pageNum - 1);
-        List<Question> questionList = questionMapper.getList(offset, pageSize);
+        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, pageSize));
         for (Question question : questionList) {
-            User user = userMapper.findById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             //将一个对象的属性直接copy到另一个对象的属性中，这里将question的属性直接放到questionDTO中
             BeanUtils.copyProperties(question, questionDTO);
@@ -55,16 +57,20 @@ public class QuestionService {
     public PaginationDTO getListByUserId(Integer userId, Integer pageNum, Integer pageSize) {
         PaginationDTO paginationDTO = new PaginationDTO();
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        Integer totalCount = questionMapper.getCountByUserId(userId);
+        QuestionExample example = new QuestionExample();
+        example.createCriteria().andCreatorEqualTo(userId);
+        Integer totalCount = (int) questionMapper.countByExample(example);
         paginationDTO.setPagination(totalCount, pageNum, pageSize);
         //当页码小于1时，设置为1；大于总页数时，设置为总页数
         pageNum = pageNum > paginationDTO.getTotalPage() ? paginationDTO.getTotalPage() : pageNum;
         pageNum = pageNum < 1 ? 1 : pageNum;
         //计算sql中查询的偏移量
         Integer offset = pageSize * (pageNum - 1);
-        List<Question> questionList = questionMapper.getListByUserId(userId, offset, pageSize);
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.createCriteria().andCreatorEqualTo(userId);
+        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offset, pageSize));
         for (Question question : questionList) {
-            User user = userMapper.findById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             //将一个对象的属性直接copy到另一个对象的属性中，这里将question的属性直接放到questionDTO中
             BeanUtils.copyProperties(question, questionDTO);
@@ -76,10 +82,10 @@ public class QuestionService {
     }
 
     public QuestionDTO getListById(Integer id) {
-        Question question = questionMapper.getListById(id);
+        Question question = questionMapper.selectByPrimaryKey(id);
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
-        User user = userMapper.findById(question.getCreator());
+        User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setUser(user);
         return questionDTO;
     }
@@ -88,10 +94,16 @@ public class QuestionService {
         if (question.getId() == null){//新建
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtCreate());
-            questionMapper.create(question);
+            questionMapper.insert(question);
         } else {//更新
             question.setGmtModified(System.currentTimeMillis());
-            questionMapper.update(question);
+            Question updateQuestion = new Question();
+            updateQuestion.setGmtModified(System.currentTimeMillis());
+            updateQuestion.setTitle(question.getTitle());
+            updateQuestion.setDescription(question.getDescription());
+            updateQuestion.setTag(question.getTag());
+            updateQuestion.setId(question.getId());
+            questionMapper.updateByPrimaryKey(updateQuestion);
         }
     }
 }
