@@ -2,11 +2,14 @@ package life.majiang.community.community.service;
 
 import life.majiang.community.community.dto.PaginationDTO;
 import life.majiang.community.community.dto.QuestionDTO;
+import life.majiang.community.community.exception.CustomizeErrCode;
+import life.majiang.community.community.exception.CustomizeException;
 import life.majiang.community.community.mapper.QuestionMapper;
 import life.majiang.community.community.mapper.UserMapper;
 import life.majiang.community.community.model.Question;
 import life.majiang.community.community.model.QuestionExample;
 import life.majiang.community.community.model.User;
+import lombok.EqualsAndHashCode;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,7 @@ import java.util.List;
  * @author: Ye YinYong
  * @create: 2019-09-27 21:26
  **/
+@EqualsAndHashCode
 @Service
 @Component
 public class QuestionService {
@@ -83,6 +87,9 @@ public class QuestionService {
 
     public QuestionDTO getListById(Integer id) {
         Question question = questionMapper.selectByPrimaryKey(id);
+        if (question == null) {
+            throw new CustomizeException(CustomizeErrCode.QUESTION_NOT_FOUND);
+        }
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
         User user = userMapper.selectByPrimaryKey(question.getCreator());
@@ -106,7 +113,10 @@ public class QuestionService {
             //更新要区分：这里使用updateByExampleSelective而不是updateByPrimaryKey
             //updateByExampleSelective:是将不为null的参数更新，为null不更新
             //updateByPrimaryKey；是将传送过去的对象所以参数都更新（包括为null的参数）
-            questionMapper.updateByExampleSelective(updateQuestion, example);
+            int update = questionMapper.updateByExampleSelective(updateQuestion, example);
+            if (update != 1) {
+                throw new CustomizeException(CustomizeErrCode.QUESTION_NOT_FOUND);
+            }
         }
     }
 }
