@@ -4,6 +4,7 @@ import life.majiang.community.community.dto.PaginationDTO;
 import life.majiang.community.community.dto.QuestionDTO;
 import life.majiang.community.community.exception.CustomizeErrCode;
 import life.majiang.community.community.exception.CustomizeException;
+import life.majiang.community.community.mapper.QuestionExtMapper;
 import life.majiang.community.community.mapper.QuestionMapper;
 import life.majiang.community.community.mapper.UserMapper;
 import life.majiang.community.community.model.Question;
@@ -34,6 +35,9 @@ public class QuestionService {
     @Resource
     private QuestionMapper questionMapper;
 
+    @Resource
+    private QuestionExtMapper questionExtMapper;
+
     public PaginationDTO getList(Integer pageNum, Integer pageSize) {
         PaginationDTO paginationDTO = new PaginationDTO();
         List<QuestionDTO> questionDTOList = new ArrayList<>();
@@ -44,7 +48,7 @@ public class QuestionService {
         pageNum = pageNum < 1 ? 1 : pageNum;
         //计算sql中查询的偏移量
         Integer offset = pageSize * (pageNum - 1);
-        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, pageSize));
+        List<Question> questionList = questionExtMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offset, pageSize));
         for (Question question : questionList) {
             User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
@@ -72,7 +76,7 @@ public class QuestionService {
         Integer offset = pageSize * (pageNum - 1);
         QuestionExample questionExample = new QuestionExample();
         questionExample.createCriteria().andCreatorEqualTo(userId);
-        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offset, pageSize));
+        List<Question> questionList = questionExtMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offset, pageSize));
         for (Question question : questionList) {
             User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
@@ -85,7 +89,7 @@ public class QuestionService {
         return paginationDTO;
     }
 
-    public QuestionDTO getListById(Integer id) {
+    public QuestionDTO getById(Integer id) {
         Question question = questionMapper.selectByPrimaryKey(id);
         if (question == null) {
             throw new CustomizeException(CustomizeErrCode.QUESTION_NOT_FOUND);
@@ -118,5 +122,12 @@ public class QuestionService {
                 throw new CustomizeException(CustomizeErrCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+    public void incViewCount(Integer id) {
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incViewCount(question);
     }
 }
