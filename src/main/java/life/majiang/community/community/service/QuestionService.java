@@ -96,14 +96,17 @@ public class QuestionService {
             question.setGmtModified(question.getGmtCreate());
             questionMapper.insert(question);
         } else {//更新
-            question.setGmtModified(System.currentTimeMillis());
             Question updateQuestion = new Question();
             updateQuestion.setGmtModified(System.currentTimeMillis());
             updateQuestion.setTitle(question.getTitle());
             updateQuestion.setDescription(question.getDescription());
             updateQuestion.setTag(question.getTag());
-            updateQuestion.setId(question.getId());
-            questionMapper.updateByPrimaryKey(updateQuestion);
+            QuestionExample example = new QuestionExample();
+            example.createCriteria().andIdEqualTo(question.getId());
+            //更新要区分：这里使用updateByExampleSelective而不是updateByPrimaryKey
+            //updateByExampleSelective:是将不为null的参数更新，为null不更新
+            //updateByPrimaryKey；是将传送过去的对象所以参数都更新（包括为null的参数）
+            questionMapper.updateByExampleSelective(updateQuestion, example);
         }
     }
 }
