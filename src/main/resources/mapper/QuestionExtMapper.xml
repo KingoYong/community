@@ -69,4 +69,10 @@
     set view_count = view_count + #{viewCount}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="incCommentCount" parameterType="life.majiang.community.community.model.Question">
+    update question
+    set comment_count = comment_count + #{commentCount}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
 </mapper>

@@ -1,16 +1,17 @@
 package life.majiang.community.community.controller;
 
 import life.majiang.community.community.dto.CommentDTO;
-import life.majiang.community.community.mapper.CommentMapper;
+import life.majiang.community.community.dto.ResultDTO;
 import life.majiang.community.community.model.Comment;
+import life.majiang.community.community.service.CommentService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @description:
@@ -20,23 +21,24 @@ import java.util.Map;
 @Controller
 public class CommentController {
     @Resource
-    private CommentMapper commentMapper;
-    @PostMapping("/comment")
+    private CommentService commentService;
 
+    @PostMapping("/comment")
     @ResponseBody
-    public Object post(@RequestBody CommentDTO commentDTO){
+    public Object post(@RequestBody CommentDTO commentDTO,
+                       HttpServletRequest request){
+        /*User user = (User) request.getSession().getAttribute("user");
+        if (user == null) {
+            return ResultDTO.err(CustomizeErrCode.NO_LOGIN);
+        }*/
         Comment comment = new Comment();
-        comment.setParentId(commentDTO.getParentId());
-        comment.setType(commentDTO.getType());
-        comment.setContent(commentDTO.getContent());
-//        BeanUtils.copyProperties(commentDTO,comment);
+        BeanUtils.copyProperties(commentDTO,comment);
         comment.setGmtCreat(System.currentTimeMillis());
         comment.setGmtModified(System.currentTimeMillis());
         comment.setCommentator(1);
+//        comment.setCommentator(user.getId());
         comment.setLikeCount(0L);
-        commentMapper.insert(comment);
-        Map<Object, Object> map = new HashMap<>();
-        map.put("message","成功");
-        return map;
+        commentService.insert(comment);
+        return ResultDTO.ok();
     }
 }

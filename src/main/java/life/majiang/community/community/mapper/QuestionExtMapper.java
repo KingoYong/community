@@ -12,4 +12,6 @@ public interface QuestionExtMapper {
 
     int incViewCount(Question record);
 
+    int incCommentCount(Question record);
+
 }
