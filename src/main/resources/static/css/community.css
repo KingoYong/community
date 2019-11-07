@@ -44,3 +44,6 @@
     float: right;
     margin-bottom: 10px;
 }
+.menu .icon:hover {
+    color: #499ef3;
+}
