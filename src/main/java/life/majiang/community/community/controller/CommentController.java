@@ -1,6 +1,6 @@
 package life.majiang.community.community.controller;
 
-import life.majiang.community.community.dto.CommentDTO;
+import life.majiang.community.community.dto.CommentCreateDTO;
 import life.majiang.community.community.dto.ResultDTO;
 import life.majiang.community.community.exception.CustomizeErrCode;
 import life.majiang.community.community.model.Comment;
@@ -27,7 +27,7 @@ public class CommentController {
 
     @PostMapping("/comment")
     @ResponseBody
-    public Object post(@RequestBody CommentDTO commentDTO,
+    public Object post(@RequestBody CommentCreateDTO commentDTO,
                        HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
